@@ -22,12 +22,12 @@ verify <public key> <message> && echo success
 ## Simplified away
 
 - gpg home directory
-	keys are just files
+	- keys are just files
 - trust levels
-	you should know whether you trust a key or not
+	- you should know whether you trust a key or not
 - choice of algorithms
-	the default behaviour (RSA everywhere) is fine for most purposes
+	- the default behaviour (RSA everywhere) is fine for most purposes
 - signing options
-	a signature is just a signature in a file, and does not include the signed data
+	- a signature is just a signature in a file, and does not include the signed data
 
 Some other advanced features may be missing.
