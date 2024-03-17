@@ -1,0 +1,25 @@
+#!/bin/sh
+
+usage="usage: cat message | encrypt <public key>"
+
+require() {
+	if [ -z "$1" ]
+	then
+		echo "$usage"
+		exit 1
+	fi
+}
+
+require "$1"
+
+tmpdir=$(mktemp -d)
+
+# import key
+gpg --homedir "$tmpdir" --import "$1" 2>/dev/null
+
+fingerprint=$(gpg --homedir "$tmpdir" --list-keys --fingerprint --with-colons 2>/dev/null | grep "^fpr" | head -n 1 | cut -c 13- | rev | cut -c 2- | rev)
+
+# decrypt file
+gpg --homedir "$tmpdir" --encrypt --recipient "$fingerprint" --trust-model always --armor
+
+rm -r "$tmpdir"

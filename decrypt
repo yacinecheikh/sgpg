@@ -1,0 +1,24 @@
+#!/bin/sh
+
+usage="usage: cat encrypted | decrypt <private key>"
+
+require() {
+	if [ -z "$1" ]
+	then
+		echo "$usage"
+		exit 1
+	fi
+}
+
+require "$1"
+
+tmpdir=$(mktemp -d)
+
+# import key
+gpg --homedir "$tmpdir" --import "$1" 2>/dev/null
+
+# decrypt file
+# use "--output output.txt" to save as file
+gpg --homedir "$tmpdir" --decrypt --recipient "$1" 2>/dev/null
+
+rm -r "$tmpdir"

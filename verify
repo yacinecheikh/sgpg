@@ -1,0 +1,29 @@
+#!/bin/sh
+
+usage="usage: verify <public key> <message> && echo success"
+
+require() {
+	if [ -z "$1" ]
+	then
+		echo "$usage"
+		exit 1
+	fi
+}
+
+require "$1"
+require "$2"
+
+tmpdir=$(mktemp -d)
+
+# import key
+gpg --homedir "$tmpdir" --import "$1" 2>/dev/null
+fingerprint=$(gpg --homedir "$tmpdir" --list-keys --fingerprint --with-colons 2>/dev/null | grep "^fpr" | head -n 1 | cut -c 13- | rev | cut -c 2- | rev)
+
+# verify the signature
+# gpg only complains on stderr, so we use the exit code as a return value
+gpg --homedir "$tmpdir" --verify "$2".asc 2>/dev/null
+result=$?
+
+rm -r "$tmpdir"
+
+exit $result

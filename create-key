@@ -1,0 +1,24 @@
+#!/bin/sh
+
+usage="usage: create-key <key name>"
+
+require() {
+	if [ -z "$1" ]
+	then
+		echo "$usage"
+		exit 1
+	fi
+}
+
+require "$1"
+
+tmpdir=$(mktemp -d)
+
+# create key in the temp directory
+gpg --homedir "$tmpdir" --batch --passphrase "" --quick-gen-key "$1"
+
+# export it to public/private key files
+gpg --homedir "$tmpdir" --export-secret-keys --armor "$1" > "$1".private.asc
+gpg --homedir "$tmpdir" --export --armor "$1" > "$1".public.asc
+
+rm -r "$tmpdir"

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+usage="usage: sign <private key> <message>"
+
+require() {
+	if [ -z "$1" ]
+	then
+		echo "$usage"
+		exit 1
+	fi
+}
+
+require "$1"
+require "$2"
+
+tmpdir=$(mktemp -d)
+
+# import key
+gpg --homedir "$tmpdir" --import "$1" 2>/dev/null
+fingerprint=$(gpg --homedir "$tmpdir" --list-keys --fingerprint --with-colons 2>/dev/null | grep "^fpr" | head -n 1 | cut -c 13- | rev | cut -c 2- | rev)
+
+gpg --homedir "$tmpdir" --local-user "$fingerprint" --detach-sign --armor "$2"
+
+rm -r "$tmpdir"
